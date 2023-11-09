@@ -1,47 +1,85 @@
 var player;
-var playerX, playerY;
 
-var screen_1 = function(sketch) {
-  sketch.setup = function() {
-    let canvas1 = sketch.createCanvas(400, 240);
-    canvas1.position(210,0);
-    
-    player = sketch.createSprite(200,110, 50, 50);
+var score = 0;
+var enemyCount = 0;
+var enemyActive = 0;
+var enemyMax = 10;
+var enemies = [];
+var enemyGroup;
+var enemySystem = false;
+
+function setup() {
+  createCanvas(400,400);
+  
+  player = createSprite(200,200,50,50);
+  
+  enemyGroup = createGroup();
+}
+
+function draw() {
+  background("black");
+  
+  playerMovement();
+  
+  if(enemyActive < enemyMax) {
+    if(frameCount % 5 === 0) {
+      generateEnemy(enemyCount);
+    }
   }
   
-  sketch.draw = function() {
-    sketch.background("black");
-    
-    sketch.camera.x = player.x;
-    sketch.camera.y = player.y;
-    
-    sketch.playerMovement();
-    
-    sketch.drawSprites();
+  if(enemySystem === true) {
+    for(let i = 0; i<enemyCount; i++) {
+  enemies[i].attractionPoint(1,player.position.x,player.position.y)
+      enemies[i].friction = 0.5;
+    }
   }
   
-  sketch.playerMovement = function(){
-    if(sketch.keyDown("w")) {
-      player.y -= 5;
+  if(player.isTouching(enemyGroup)) {
+    for(let i=0; i<enemyCount; i++) {
+      if(player.isTouching(enemies[i])) {
+        enemyGroup.remove(enemies[i]);
+        enemies[i].destroy();
+        score++;
+        enemyActive--;
+        console.log(score, enemyActive);
+      }
     }
+  }
   
-    if(sketch.keyDown("a")) {
-      player.x -= 5;
-    }
+  if(keyDown("o")) {
+    console.log(enemies);
+  }
   
-    if(sketch.keyDown("s")) {
-      player.y += 5;
-    }
+  drawSprites();
+}
+
+function playerMovement() {
+  if(keyDown("w")) {
+    player.y -= 5;
+  }
   
-    if(sketch.keyDown("d")) {
-      player.x += 5;
-    }
-    
-    playerX = player.x;
-    playerY = player.y;
-    
-    console.log(playerX, playerY);
+  if(keyDown("a")) {
+    player.x -= 5;
+  }
+  
+  if(keyDown("s")) {
+    player.y += 5;
+  }
+  
+  if(keyDown("d")) {
+    player.x += 5;
   }
 }
 
-new p5(screen_1);
+function generateEnemy(count) {
+  let eCount = count;
+  let eX = Math.round(random(100, 300));
+  let eY = Math.round(random(100, 300));
+  
+  enemies.push(createSprite(eX, eY, 25, 25));
+  enemyCount+=1;
+  enemyActive+=1;
+  
+  enemyGroup.add(enemies[eCount]);
+  enemySystem = true;
+}
