@@ -1,2 +1,2 @@
-# ds-style-demo
-got bored so I learned how to make multiple "screens" to simulate the ds.
+# Javascript Demos
+A bunch of random small code bits using the p5.js libraries to help my friend understand the libraries
