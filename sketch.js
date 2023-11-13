@@ -1,85 +1,58 @@
-var player;
-
-var score = 0;
-var enemyCount = 0;
-var enemyActive = 0;
-var enemyMax = 10;
-var enemies = [];
-var enemyGroup;
-var enemySystem = false;
+ var player;
+ var p_flicker = false;
+ var flickerCount = 0;
 
 function setup() {
   createCanvas(400,400);
   
-  player = createSprite(200,200,50,50);
-  
-  enemyGroup = createGroup();
+  player = createSprite(200, 200, 50, 50);
 }
 
 function draw() {
   background("black");
   
+  if(keyDown("6")) {
+    p_flicker = true;
+  }
+  
   playerMovement();
-  
-  if(enemyActive < enemyMax) {
-    if(frameCount % 5 === 0) {
-      generateEnemy(enemyCount);
-    }
-  }
-  
-  if(enemySystem === true) {
-    for(let i = 0; i<enemyCount; i++) {
-  enemies[i].attractionPoint(1,player.position.x,player.position.y)
-      enemies[i].friction = 0.5;
-    }
-  }
-  
-  if(player.isTouching(enemyGroup)) {
-    for(let i=0; i<enemyCount; i++) {
-      if(player.isTouching(enemies[i])) {
-        enemyGroup.remove(enemies[i]);
-        enemies[i].destroy();
-        score++;
-        enemyActive--;
-        console.log(score, enemyActive);
-      }
-    }
-  }
-  
-  if(keyDown("o")) {
-    console.log(enemies);
-  }
+  playerFlicker();
   
   drawSprites();
 }
 
 function playerMovement() {
-  if(keyDown("w")) {
+  if(keyDown("w")){
     player.y -= 5;
   }
   
-  if(keyDown("a")) {
+  if(keyDown("a")){
     player.x -= 5;
   }
   
-  if(keyDown("s")) {
+  if(keyDown("s")){
     player.y += 5;
   }
   
-  if(keyDown("d")) {
+  if(keyDown("d")){
     player.x += 5;
   }
 }
 
-function generateEnemy(count) {
-  let eCount = count;
-  let eX = Math.round(random(100, 300));
-  let eY = Math.round(random(100, 300));
-  
-  enemies.push(createSprite(eX, eY, 25, 25));
-  enemyCount+=1;
-  enemyActive+=1;
-  
-  enemyGroup.add(enemies[eCount]);
-  enemySystem = true;
+function playerFlicker(){
+  if(p_flicker === true) {
+    if(flickerCount < 5) {
+      if(frameCount % 4 === 0) {
+        player.visible = false;
+        flickerCount += 0.5;
+      }else {
+        player.visible = true;
+      }
+    }else {
+      p_flicker = false;
+    }
+  }else {
+    flickerCount = 0;
+    player.visible = true;
+  }
 }
